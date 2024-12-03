@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Крестики-нолики</title>
+    <style>
+        /* Стиль для body, чтобы установить фоновое изображение */
+        body {
+            font-family: Arial, sans-serif;
+            background: url('images/background.jpg') no-repeat center center fixed; /* Путь к изображению */
+            background-size: cover; /* Убедитесь, что изображение заполняет весь экран */
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: white;
+            flex-direction: column; /* Центрируем элементы по вертикали */
+        }
+        .container {
+            text-align: center; /* Центрируем контейнер */
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 5px;
+            border: 3px solid white;
+            padding: 10px;
+            margin-top: 20px; /* Отступ сверху для доски */
+        }
+        .cell {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.5);
+            font-size: 2.5em; /* Сделал шрифт чуть больше */
+            cursor: pointer;
+        }
+        .cell:hover {
+            background-color: rgba(255, 255, 255, 0.7);
+        }
+        .message {
+            font-size: 3em; /* Увеличен размер шрифта для победителя */
+            font-weight: bold; /* Сделаем текст жирным */
+            margin-bottom: 20px; /* Отступ снизу */
+            color: #FFD700; /* Золотой цвет для победителя */
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            font-size: 1em;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+
+        /* Цвет для крестиков (X) */
+        .cell.X {
+            color: #FF6347; /* Томато (красный) */
+            font-weight: bold;
+        }
+
+        /* Цвет для ноликов (O) */
+        .cell.O {
+            color: #1E90FF; /* Синий */
+            font-weight: bold;
+        }
+
+        /* Стиль для текста создателя игры внизу */
+        .creator {
+            font-size: 1.2em;
+            margin-top: 20px;
+            color: #FFFFFF; /* Белый цвет */
+            font-style: italic; /* Курсив */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="message" id="message">Ход игрока X</div> <!-- Сообщение будет сверху -->
+        <div class="board" id="board">
+            <div class="cell" onclick="makeMove(0)"></div>
+            <div class="cell" onclick="makeMove(1)"></div>
+            <div class="cell" onclick="makeMove(2)"></div>
+            <div class="cell" onclick="makeMove(3)"></div>
+            <div class="cell" onclick="makeMove(4)"></div>
+            <div class="cell" onclick="makeMove(5)"></div>
+            <div class="cell" onclick="makeMove(6)"></div>
+            <div class="cell" onclick="makeMove(7)"></div>
+            <div class="cell" onclick="makeMove(8)"></div>
+        </div>
+        <button onclick="resetGame()">Начать заново</button>
+        <div class="creator">Создатель игры: Bekpaganbetov Akhmet</div> <!-- Текст с именем создателя -->
+    </div>
+
+    <script>
+        let board = ['', '', '', '', '', '', '', '', '']; // Игровое поле
+        let currentPlayer = 'X'; // Игрок X начинает
+        let gameOver = false;
+
+        function makeMove(index) {
+            if (gameOver || board[index] !== '') return; // Если игра завершена или клетка занята
+
+            board[index] = currentPlayer;
+            const cell = document.getElementsByClassName('cell')[index];
+            cell.innerText = currentPlayer;
+            cell.classList.add(currentPlayer); // Добавляем класс для изменения цвета
+
+            if (checkWinner()) {
+                document.getElementById('message').innerText = `${currentPlayer} выиграл!`;
+                gameOver = true;
+            } else if (board.every(cell => cell !== '')) {
+                document.getElementById('message').innerText = 'Ничья!';
+                gameOver = true;
+            } else {
+                currentPlayer = currentPlayer === 'X' ? 'O' : 'X'; // Меняем игрока
+                document.getElementById('message').innerText = `Ход игрока ${currentPlayer}`;
+            }
+        }
+
+        function checkWinner() {
+            const winPatterns = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8], // Горизонтальные
+                [0, 3, 6], [1, 4, 7], [2, 5, 8], // Вертикальные
+                [0, 4, 8], [2, 4, 6]  // Диагонали
+            ];
+
+            for (let pattern of winPatterns) {
+                const [a, b, c] = pattern;
+                if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function resetGame() {
+            board = ['', '', '', '', '', '', '', '', ''];
+            currentPlayer = 'X';
+            gameOver = false;
+            document.getElementById('message').innerText = `Ход игрока ${currentPlayer}`;
+            const cells = document.getElementsByClassName('cell');
+            for (let cell of cells) {
+                cell.innerText = '';
+                cell.classList.remove('X', 'O'); // Убираем классы при сбросе
+            }
+        }
+    </script>
+
+</body>
+</html>
